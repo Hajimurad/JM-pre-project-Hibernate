@@ -18,12 +18,22 @@ public class Util {
 
 
     public static Session getSessionFromConfig() throws HibernateException {
+        if (sessionFactory == null) {
+            try {
+                Configuration config = new Configuration()
+                        .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+                        .setProperty("hibernate.show_sql", "true")
+                        .setProperty("hibernate.connection.url", URL)
+                        .setProperty("hibernate.connection.username", LOGIN)
+                        .setProperty("hibernate.connection.password", PASSWORD)
+                        .setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver")
+                        .setProperty("hibernate.hbm2ddl.auto", "update")
+                        .addAnnotatedClass(model.User.class);
 
-        try{
-            Configuration config = new Configuration().configure();
-            sessionFactory = config.buildSessionFactory();
-        } catch(Throwable t) {
-            throw new ExceptionInInitializerError(t);
+                sessionFactory = config.buildSessionFactory();
+            } catch (Throwable t) {
+                throw new ExceptionInInitializerError(t);
+            }
         }
         return sessionFactory.openSession();
     }
